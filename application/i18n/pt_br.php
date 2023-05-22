@@ -36,6 +36,19 @@ Author Email: contato@sistemasbrasileiros.com.br
 Author Website: http://www.sistemasbrasileiros.com.br
 ------------------------------------------
 */
+/*Novos campos adicionados*/
+$_L['cpf'] = 'CPF';
+$_L['data_nascimento'] = 'Nascimento';
+$_L['cod_usuario'] = 'Cód. Usuário';
+$_L['tipo_usuario'] = 'Tipo Usuário';
+$_L['data_inicio'] = 'Início do Plano';
+$_L['valor_fatura'] = 'Vlr. Fatura';
+$_L['vencimento_fatura'] = 'Venc. da Fatura';
+$_L['second_email'] = 'E-mail 2';
+$_L['second_phone'] = 'Telefone 2';
+$_L['numero_res'] = 'Nº';
+$_L['bairro'] = 'Bairro';
+
 
 $_L['grupo'] = 'Grupo';
 $_L['Login'] = 'Entrar';
@@ -1146,7 +1159,7 @@ $_L['Last Name'] = 'Last Name';
 $_L['Industry'] = 'Industry';
 $_L['No. of Employees'] = 'No. of Employees';
 $_L['Public'] = 'Public';
-$_L['Company'] = 'Company';
+$_L['Company'] = 'Empresa';
 $_L['Street'] = 'Street';
 $_L['Memo'] = 'Memo'; // Description
 $_L['Convert to Customer'] = 'Convert to Customer';

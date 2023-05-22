@@ -682,6 +682,233 @@ switch ($action) {
 
         break;
 
+/*      
+// Este bloco de código está respondendo a uma ação do tipo 'list'
+case 'list':
+    // Dispara um evento chamado 'invoices/list/'
+    Event::trigger('invoices/list/');
+    
+    // Inicializa algumas variáveis
+    $paginator = [];
+    $mode_css = '';
+    $mode_js = '';
+    $view_type = 'default';
+    
+    // Se a rota atual for 'filter', o código executará uma série de ações para filtrar os dados
+    if (route(2) == 'filter') {
+        // Configura o tipo de visualização como 'filter'
+        $view_type = 'filter';
+    
+        // Define os arquivos CSS e JS que serão usados para essa visualização
+        $mode_css = Asset::css('footable/css/footable.core.min');
+        $mode_js = Asset::js([
+            'numeric',
+            'footable/js/footable.all.min',
+            'contacts/mode_search',
+        ]);
+    
+        // Conta o número total de faturas
+        $total_invoice = ORM::for_table('sys_faturas')->count();
+    
+        // Passa esse número para a interface do usuário
+        $ui->assign('total_invoice', $total_invoice);
+    
+        // Prepara uma consulta ao banco de dados, juntando duas tabelas e selecionando algumas colunas
+        $f = ORM::for_table('sys_faturas')
+        ->left_outer_join('crm_accounts', array('sys_faturas.cliente_id', '=', 'crm_accounts.id'))
+        ->select('sys_faturas.*')
+        ->select('crm_accounts.cpf_titular', 'cpf_titular')
+        ->select('crm_accounts.status', 'status')
+        ->select('crm_accounts.phone', 'phone')
+        ->select('crm_accounts.email', 'email')
+        ->select('crm_accounts.account', 'account');
+    
+        // Se todos os campos de filtro foram enviados via POST
+        if (isset($_POST['situacao']) && isset($_POST['start_date']) && isset($_POST['end_date']) && isset($_POST['cpf'])) {
+            // Armazena os valores dos campos de filtro em variáveis
+            $situacao = $_POST['situacao'];
+            $start_date = $_POST['start_date'];
+            $end_date = $_POST['end_date'];
+            $cpf = $_POST['cpf'];
+            $status = $_POST['status'];
+
+       
+
+            // Verifica se todas as variáveis POST estão vazias
+            if ($situacao == '' && $start_date == '' && $end_date == '' && $cpf == '' && $status == '') {
+                $d = [];
+                $ui->assign('d', $d);
+                $ui->assign('view_type', $view_type);
+                $ui->assign('paginator', $paginator);
+                $ui->display('list-invoices.tpl');
+                return;
+            }
+            
+            // Se algum valor foi fornecido para 'situacao', adiciona isso como uma condição para a consulta
+            if ($situacao != '') {
+                $f->where('situacao', $situacao);
+            }
+            
+            // Faz o mesmo para 'start_date', 'end_date', 'cpf' e 'status'
+            if ($start_date != '') {
+                $f->where_gte('data_vencimento', $start_date);
+            }
+            
+            if ($end_date != '') {
+                $f->where_lte('data_vencimento', $end_date);
+            }
+        
+            if ($cpf != '') {
+                // Remove os pontos do CPF antes da busca
+                $cpf = str_replace('.', '', $cpf);
+                $f->where_like('crm_accounts.cpf_titular', "%$cpf%");
+            }
+
+            if ($status != '') {
+                $f->where('crm_accounts.status', $status);
+            }
+
+            // Inicializa uma mensagem que será exibida na interface do usuário
+            $filter_message = 'Exibindo as faturas';
+
+            // Se 'situacao' foi fornecido, adiciona à mensagem
+            if ($situacao != '') {
+                $filter_message .= " <strong>$situacao</strong>";
+            }
+
+            // Se 'start_date' e 'end_date' foram fornecidos, adiciona à mensagem
+            if ($start_date != '' && $end_date != '') {
+                $start_date = date('d/m/Y', strtotime($start_date));
+                $end_date = date('d/m/Y', strtotime($end_date));
+                $filter_message .= " do período <strong>$start_date</strong> a <strong>$end_date</strong>";
+            } elseif ($start_date != '') {
+                $start_date = date('d/m/Y', strtotime($start_date));
+                $filter_message .= " a partir de $start_date";
+            } elseif ($end_date != '') {
+                $end_date = date('d/m/Y', strtotime($end_date));
+                $filter_message .= " até $end_date";
+            }
+
+            // Passa a mensagem para a interface do usuário
+            $ui->assign('filter_message', $filter_message);
+
+            // Executa a consulta e armazena o resultado
+            $d = $f->order_by_desc('id')->find_many();
+
+            // Converte o resultado para um array associativo
+            $filtered_data = [];
+            foreach ($d as $row) {
+                $filtered_data[] = $row->as_array();
+            }
+
+            // Conta o número total de registros selecionados e soma os valores
+            $total_selected = count($d);
+            $total_sum = 0;
+            foreach($d as $fatura) {
+                $total_sum += $fatura['valor'];
+            }
+
+            // Formata a soma total como uma string de moeda e passa para a interface do usuário
+            $total_sum_formatted = 'R$ ' . number_format($total_sum, 2, ',', '.');
+            $ui->assign('total_sum', $total_sum_formatted);
+            $ui->assign('total_selected', $total_selected);
+        // Armazena os resultados filtrados na sessão
+        $_SESSION['filtered_data'] = $filtered_data;
+        } else {
+            // Se nenhum campo de filtro foi fornecido, inicializa o resultado da consulta como um array vazio
+            $d = [];
+            // Não esqueça de limpar a variável da sessão se nenhum filtro foi aplicado
+            unset($_SESSION['filtered_data']);
+}
+        // Define o conteúdo do paginador como uma string vazia
+        $paginator['contents'] = '';
+    } else {
+        // Se a rota atual não for 'filter', executa uma série de ações diferentes
+        $mode_js = Asset::js(['numeric']);
+        $paginator = Paginator::bootstrap('sys_faturas');
+        $d = ORM::for_table('sys_faturas')
+        ->left_outer_join('crm_accounts', array('sys_faturas.cliente_id', '=', 'crm_accounts.id'))
+        ->select('sys_faturas.*')
+        ->select('crm_accounts.cpf_titular', 'cpf_titular')
+        ->select('crm_accounts.account', 'account')
+        ->offset($paginator['startpoint'])
+        ->limit($paginator['limit'])
+        ->order_by_desc('sys_faturas.id')
+        ->find_many();
+    }   
+
+        // Passa os resultados da consulta para a interface do usuário
+        $ui->assign('d', $d);
+        $ui->assign('view_type', $view_type);
+        $ui->assign('paginator', $paginator);
+
+    
+      
+// Atribui um string HTML contendo um link para exportar dados para CSV à variável '_st'
+$ui->assign(
+    '_st',
+    $_L['Invoices'] .
+        '<div class="btn-group pull-right" style="padding-right: 10px;">
+            <a class="btn btn-success btn-xs" href="' . U . 'invoices/export_csv/' . '" style="box-shadow: none;"><i class="fa fa-download"></i></a>
+        </div>'
+);
+
+// Atribui os arquivos CSS e JS à variáveis específicas
+$ui->assign('xheader', $mode_css);
+$ui->assign('xfooter', $mode_js);
+
+// Atribui o tipo de visualização
+$ui->assign('view_type', $view_type);
+
+// Inicializa o plugin autoNumeric e adiciona alguns eventos de clique e tooltip
+$ui->assign(
+    'xjq',
+    '
+    $(\'.amount\').autoNumeric(\'init\', {
+        dGroup: ' .
+            $config['thousand_separator_placement'] .
+            ',
+        aPad: ' .
+            $config['currency_decimal_digits'] .
+            ',
+        pSign: \'' .
+            $config['currency_symbol_position'] .
+            '\',
+        aDec: \'' .
+            $config['dec_point'] .
+            '\',
+        aSep: \'' .
+            $config['thousands_sep'] .
+            '\'
+    });
+
+    // Adiciona um evento de clique aos elementos com a classe "cdelete"
+    $(".cdelete").click(function (e) {
+        e.preventDefault();
+        var id = this.id;
+        // Quando clicado, um modal de confirmação é exibido
+        bootbox.confirm("' .
+            $_L['are_you_sure'] .
+            '", function(result) {
+            // Se o usuário confirmar, ele é redirecionado para a URL de exclusão
+            if(result){
+                var _url = $("#_url").val();
+                window.location.href = _url + "delete/invoice/" + id;
+            }
+        });
+    });
+
+    // Inicializa os tooltips nos elementos com o atributo data-toggle="tooltip"
+    $(\'[data-toggle="tooltip"]\').tooltip();
+    '
+);
+
+
+// Exibe o template 'list-invoices.tpl'
+$ui->display('list-invoices.tpl');
+break;*/
+
+//Backup do código original
     case 'list':
         Event::trigger('invoices/list/');
 
@@ -805,7 +1032,7 @@ $(\'[data-toggle="tooltip"]\').tooltip();
         );
 
         $ui->display('list-invoices.tpl');
-        break;
+        break; 
 
     case 'list-recurring':
         $d = ORM::for_table('sys_invoices')

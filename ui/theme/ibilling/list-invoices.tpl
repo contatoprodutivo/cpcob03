@@ -3,185 +3,100 @@
 {block name="content"}
 
     <div class="row">
-        <div class="col-md-12 m-t-md">
-            <div class="alert alert-danger" id="nmsg">
-              <h4>
-  Valor das faturas: <strong style="font-size: larger;">{$total_sum}</strong><br>
-    Total de faturas: <strong style="font-size: larger;">{$total_selected}</strong><br>
-  </h4>
-                <span id="filter_message">{$filter_message}</span>
-            </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-3 ib_profile_width">
-
-            <div class="panel panel-default" id="nbox_panel">
-
-                <div class="panel-body">
-                    {if $view_type == 'filter'}
-<!-- Nome do filtro -->
-  <h2>Filtros</h2>
-                   <form class="form-horizontal" method="post" action="{$_url}invoices/list/filter/">
-    <div class="form-group">
         <div class="col-md-12">
-            <label>Status</label>
-            <div class="input-group">
-                <div class="input-group-addon">
-                    <span class="fa fa-filter"></span>
-                </div>
-                <select name="situacao" class="form-control">
-                    <<option value="">-- Selecione --</option>
-                    <option value="A - Aberto">Aberto</option>
-                    <option value="P - Pago">Pago</option>
-                    <option value="C - Cancelado">Cancelado</option>
-                    <option value="N - Negociado">Negociado</option>
-                </select>
-            </div>
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-md-12">
-            <label>CPF</label>
-            <div class="input-group">
-                <div class="input-group-addon">
-                    <span class="fa fa-id-card"></span>
-                </div>
-                <input type="text" name="cpf" class="form-control" placeholder="CPF"/>
-            </div>
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-md-12">
-            <label>Data inicial</label>
-            <div class="input-group">
-                <div class="input-group-addon">
-                    <span class="fa fa-calendar"></span>
-                </div>
-                <input type="date" name="start_date" class="form-control" placeholder="Data inicial"/>
-            </div>
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-md-12">
-            <label>Data final</label>
-            <div class="input-group">
-                <div class="input-group-addon">
-                    <span class="fa fa-calendar"></span>
-                </div>
-                <input type="date" name="end_date" class="form-control" placeholder="Data final"/>
-            </div>
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-md-12">
-            <label>Status</label>
-            <div class="input-group">
-                <div class="input-group-addon">
-                    <span class="fa fa-balance-scale"></span>
-                </div>
-                <select name="status" class="form-control">
-                    <option value="">-- Selecione --</option>
-                    <option value="Active">Ativo</option>
-                    <option value="Inactive">Inativo</option>
-                </select>
-            </div>
-        </div>
-    </div>
-    <div class="form-group">
-        <div class="col-md-12">
-            <button type="submit" class="btn btn-primary">{$_L['Search']}</button>
-            <a class="btn btn-success" href="{$_url}invoices/export_csv/"><i class="fa fa-download"></i> {$_L['Baixar']}</a>
-        </div>
-    </div>
-</form>
-
- {/if} 
-
-                </div>
-
-                <div class="panel-body list-group border-bottom m-t-n-lg">
-                    <!-- Links para outras partes do seu sistema aqui -->
-
-                </div>
-
-                <div class="panel-body">
-                    <!-- Mais filtros ou opções aqui -->
-                    
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="col-md-9">
-
-            <!-- START TABELA -->
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
-                    <!-- Nome da tabela aqui-->
+                    {if $view_type == 'filter'}
+                        <h5>{$_L['Total']} : {$total_invoice}</h5>
+                    {else}
+                        <h5>{$paginator['found']} {$_L['Records']}. {if $paginator['found'] > 0}{$_L['Page']} {$paginator['page']} {$_L['of']} {$paginator['lastpage']}.{/if}</h5>
+                    {/if}
+                    <div class="ibox-tools">
+                        {if $view_type neq 'filter'}
+                            <a href="{$_url}invoices/list/filter/" class="btn btn-primary btn-xs"><i class="fa fa-search"></i> {$_L['Filter']}</a>
+                        {else}
+                            <a href="{$_url}invoices/list/" class="btn btn-primary btn-xs"><i class="fa fa-arrow-left"></i> {$_L['Back']}</a>
+                        {/if}
+                        <a href="{$_url}invoices/add/" class="btn btn-primary btn-xs"><i class="fa fa-plus"></i> {$_L['Add Invoice']}</a>
+
+                    </div>
                 </div>
+                <div class="ibox-content">
 
-                <div class="ibox-content" id="nbox_form">
-                    <div id="application_ajaxrender" style="min-height: 200px;">
-                        <!-- aqui começa a tabela -->
+                    {if $view_type == 'filter'}
+                        <form class="form-horizontal" method="post" action="{$_url}customers/list/">
+                            <div class="form-group">
+                                <div class="col-md-12">
+                                    <div class="input-group">
+                                        <div class="input-group-addon">
+                                            <span class="fa fa-search"></span>
+                                        </div>
+                                        <input type="text" name="name" id="foo_filter" class="form-control" placeholder="{$_L['Search']}..."/>
 
+                                    </div>
+                                </div>
+
+                            </div>
+                        </form>
+                    {/if}
 
                     <table class="table table-bordered table-hover sys_table footable" {if $view_type == 'filter'} data-filter="#foo_filter" data-page-size="50" {/if}>
                         <thead>
                         <tr>
-                            <th>ID Cliente</th>
-                            <th>Status</th>
-                            <th>CPF</th>
-                            <th>Nome</th>
-                            <th>Valor</th>
-                            <th>Vencimento</th>                            
-                            <th>Situação</th>   
-                            <th>Boleto</th>                         
-                            
-                            <th class="text-center">Atividades</th>
+                            <th>#</th>
+                            <th>{$_L['Account']}</th>
+                            <th>{$_L['Amount']}</th>
+                            <th>{$_L['Invoice Date']}</th>
+                            <th>{$_L['Due Date']}</th>
+                            <th>
+                                {$_L['Status']}
+                            </th>
+                            <th>{$_L['Type']}</th>
+                            <th class="text-right">{$_L['Manage']}</th>
                         </tr>
                         </thead>
                         <tbody>
 
                         {foreach $d as $ds}
                             <tr>
-                                <td data-value="{$ds['cliente_id']}"><a href="{$_url}contacts/view/{$ds['cliente_id']}/invoices/" target="_blank">{$ds['cliente_id']}</td>
-                            <td data-value="{$ds['cliente_id']}"><a href="{$_url}contacts/view/{$ds['cliente_id']}/invoices/" target="_blank">{if $ds.status eq 'Active'}Ativo{elseif $ds.status eq 'Inactive'}Inativo{else}{$ds.status}{/if}</td>
-                                <td data-value="{$ds['cliente_id']}"><a href="{$_url}contacts/view/{$ds['cliente_id']}/invoices/" target="_blank">{$ds['cpf_titular']}</td>
-                                <td data-value="{$ds['cliente_id']}"><a href="{$_url}contacts/view/{$ds['cliente_id']}/invoices/" target="_blank">{$ds['account']}</td>
-                                <td class="amount" data-a-sign="{if $ds['currency_symbol'] eq ''} {$_c['currency_code']} {else} {$ds['currency_symbol']}{/if} ">{$ds['valor']}</td>
-                                <td data-value="{strtotime($ds['data_vencimento'])}">{date( $_c['df'], strtotime($ds['data_vencimento']))}</td>  
-                                                         
+                                <td  data-value="{$ds['id']}"><a href="{$_url}invoices/view/{$ds['id']}/">{$ds['invoicenum']}{if $ds['cn'] neq ''} {$ds['cn']} {else} {$ds['id']} {/if}</a> </td>
+                                <td><a href="{$_url}contacts/view/{$ds['userid']}/">{$ds['account']}</a> </td>
+                                <td class="amount" data-a-sign="{if $ds['currency_symbol'] eq ''} {$_c['currency_code']} {else} {$ds['currency_symbol']}{/if} ">{$ds['total']}</td>
+                                <td data-value="{strtotime($ds['date'])}">{date( $_c['df'], strtotime($ds['date']))}</td>
+                                <td data-value="{strtotime($ds['duedate'])}">{date( $_c['df'], strtotime($ds['duedate']))}</td>
                                 <td>
 
-                                    {if $ds['situacao'] eq 'A - Aberto'}
-                                        <span class="label label-danger">{ib_lan_get_line($ds['situacao'])}</span>
-                                    {elseif $ds['situacao'] eq 'P - Pago'}
-                                        <span class="label label-success">{ib_lan_get_line($ds['situacao'])}</span>
-                                    {elseif $ds['situacao'] eq 'N - Negociado'}
-                                        <span class="label label-info">{ib_lan_get_line($ds['situacao'])}</span>
-                                    {elseif $ds['situacao'] eq 'C - Cancelado'}
-                                        <span class="label">{ib_lan_get_line($ds['situacao'])}</span>
+                                    {if $ds['status'] eq 'Unpaid'}
+                                        <span class="label label-danger">{ib_lan_get_line($ds['status'])}</span>
+                                    {elseif $ds['status'] eq 'Paid'}
+                                        <span class="label label-success">{ib_lan_get_line($ds['status'])}</span>
+                                    {elseif $ds['status'] eq 'Partially Paid'}
+                                        <span class="label label-info">{ib_lan_get_line($ds['status'])}</span>
+                                    {elseif $ds['status'] eq 'Cancelled'}
+                                        <span class="label">{ib_lan_get_line($ds['status'])}</span>
                                     {else}
-                                        {ib_lan_get_line($ds['situacao'])}
+                                        {ib_lan_get_line($ds['status'])}
+                                    {/if}
+
+
+
+                                </td>
+                                <td>
+                                    {if $ds['r'] eq '0'}
+                                        <span class="label label-success"><i class="fa fa-dot-circle-o"></i> {$_L['Onetime']}</span>
+                                    {else}
+                                        <span class="label label-success"><i class="fa fa-repeat"></i> {$_L['Recurring']}</span>
                                     {/if}
                                 </td>
+                                <td class="text-right">
 
-                               
-                                     <td class="text-center">
-                                    {if $ds['link_boleto'] != ''}
-                                        <a href="{$ds['link_boleto']}" target="_blank">
-                                            Boleto
-                                        </a>
-                                    {/if}
-                                </td>
-                                <td class="text-center">
+                                    <a href="{$_url}invoices/view/{$ds['id']}/" class="btn btn-primary btn-xs" data-toggle="tooltip" data-placement="top" title="{$_L['View']}"><i class="fa fa-file-text-o"></i></a>
+                                    <a href="{$_url}invoices/clone/{$ds['id']}/" class="btn btn-success btn-xs" data-toggle="tooltip" data-placement="top" title="{$_L['Clone']}"><i class="fa fa-files-o"></i></a>
+                                    <a href="{$_url}invoices/edit/{$ds['id']}/" class="btn btn-info btn-xs" data-toggle="tooltip" data-placement="top" title="{$_L['Edit']}"><i class="fa fa-pencil"></i></a>
+                                    <a href="#" class="btn btn-danger btn-xs cdelete" id="iid{$ds['id']}" data-toggle="tooltip" data-placement="top" title="{$_L['Delete']}"><i class="fa fa-trash"></i></a>
 
-                                    <a href="{$_url}contacts/view/{$ds['cliente_id']}/activity/" class="btn btn-primary btn-xs" data-toggle="tooltip" data-placement="top" title="Ver histórico" target="_blank"><i class="fa fa-file-text-o"></i></a>
-                            
+
                                 </td>
-                         
                             </tr>
                         {/foreach}
 
@@ -199,15 +114,10 @@
                         {/if}
 
                     </table>
-{$paginator['contents']}
-                    </div>
-
+                    {$paginator['contents']}
                 </div>
             </div>
-            <!-- END TABELA -->
-
         </div>
-
     </div>
 
 {/block}

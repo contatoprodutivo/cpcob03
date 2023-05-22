@@ -1,16 +1,34 @@
 <?php
+// Verifica se a variável $myCtrl está definida. Caso contrário, atribui o valor 'contacts' a ela.
 if (!isset($myCtrl)) {
     $myCtrl = 'contacts';
 }
+
+// Realiza a autenticação do usuário
 _auth();
+
+// Atribui o valor 'contacts' à variável _application_menu da variável $ui
 $ui->assign('_application_menu', 'contacts');
+
+// Atribui um valor à variável _title da variável $ui. O valor é obtido concatenando as strings 'Contacts' e o nome da empresa.
 $ui->assign('_title', $_L['Contacts'] . ' - ' . $config['CompanyName']);
+
+// Atribui um valor à variável _st da variável $ui. O valor é obtido da variável $_L['Contacts'].
 $ui->assign('_st', $_L['Contacts']);
+
+// Atribui um valor à variável content_inner da variável $ui. O valor é obtido chamando a função inner_contents() com o parâmetro $config['c_cache'].
 $ui->assign('content_inner', inner_contents($config['c_cache']));
+
+// Atribui o valor presente na posição '1' do array $routes à variável $action.
 $action = $routes['1'];
+
+// Obtém informações do usuário chamando o método estático _info() da classe User e atribui o retorno à variável $user.
 $user = User::_info();
+
+// Atribui a variável $user à variável user da variável $ui.
 $ui->assign('user', $user);
 
+// Atribui uma string contendo atribuições de traduções em JavaScript à variável jsvar da variável $ui.
 $ui->assign(
     'jsvar',
     '
@@ -23,55 +41,72 @@ _L[\'Submit\'] = \'' .
  '
 );
 
+
 switch ($action) {
     case 'add':
-        Event::trigger('contacts/add/');
-
+        Event::trigger('contacts/add/'); // Aciona um evento relacionado à adição de contatos
+    
+        // Verifica se o usuário tem permissão para criar clientes
         if (!has_access($user->roleid, 'customers', 'create')) {
-            permissionDenied();
+            permissionDenied(); // Exibe uma mensagem de permissão negada
         }
-
-        $ui->assign('countries', Countries::all($config['country'])); // may add this $config['country_code']
-
+    
+        $ui->assign('countries', Countries::all($config['country'])); // Atribui uma lista de países ao objeto $ui
+    
+        // Consulta ao banco de dados para recuperar campos personalizados
         $fs = ORM::for_table('crm_customfields')
             ->where('ctype', 'crm')
             ->order_by_asc('id')
             ->find_many();
-        $ui->assign('fs', $fs);
-
-        // find all companies
-
+        $ui->assign('fs', $fs); // Atribui os campos personalizados ao objeto $ui
+    
+        // Consulta ao banco de dados para recuperar informações sobre empresas
         $companies = ORM::for_table('sys_companies')
             ->select('id')
             ->select('company_name')
             ->order_by_desc('id')
             ->find_array();
+        $ui->assign('companies', $companies); // Atribui as informações das empresas ao objeto $ui
 
-        $ui->assign('companies', $companies);
+        // Consulta ao banco de dados para recuperar informações sobre os planos
+        $plans = ORM::for_table('sys_items')
+        ->select('id')
+        ->select('sales_price')
+        ->order_by_desc('id')
+        ->find_array();
+        $ui->assign('plans', $plans); // Atribui as informações dos planos ao objeto $ui
 
-        // find all groups
+        // Consulta ao banco de dados para recuperar informações sobre os tipos de usuários
+        $tiposUsuarios = ORM::for_table('sys_tipo_usuarios')
+        ->select('tipo_usuario')
+        ->find_array();
+        $ui->assign('tiposUsuarios', $tiposUsuarios); // Atribui as informações dos tipos de usuários ao objeto $ui
 
+
+        // Consulta ao banco de dados para recuperar informações sobre grupos
         $gs = ORM::for_table('crm_groups')
             ->order_by_asc('sorder')
             ->find_array();
-
-        $ui->assign('gs', $gs);
-
-        $g_selected_id = route(2);
-        $c_selected_id = route(3);
-
+        $ui->assign('gs', $gs); // Atribui as informações dos grupos ao objeto $ui
+    
+        $g_selected_id = route(2); // Obtém o valor da rota no índice 2
+        $c_selected_id = route(3); // Obtém o valor da rota no índice 3
+    
+        // Atribui o valor de $g_selected_id ao objeto $ui
         if ($g_selected_id) {
             $ui->assign('g_selected_id', $g_selected_id);
         } else {
             $ui->assign('g_selected_id', '');
         }
-
+    
+        // Atribui o valor de $c_selected_id ao objeto $ui
         if ($c_selected_id) {
             $ui->assign('c_selected_id', $c_selected_id);
         } else {
             $ui->assign('c_selected_id', '');
         }
-
+    
+        // Atribui arquivos CSS e JavaScript ao objeto $ui
         $ui->assign('xheader', Asset::css(['modal', 's2/css/select2.min']));
         $ui->assign(
             'xfooter',
@@ -82,39 +117,43 @@ switch ($action) {
                 'add-contact',
             ])
         );
-        $tags = Tags::get_all('Contacts');
-        $ui->assign('tags', $tags);
+    
+        $tags = Tags::get_all('Contacts'); // Obtém todas as tags relacionadas a contatos
+        $ui->assign('tags', $tags); // Atribui as tags ao objeto $ui
+    
+        // Atribui um trecho de código JavaScript ao objeto $ui
         $ui->assign(
             'xjq',
             '
- $("#country").select2({
- theme: "bootstrap"
- });
- '
+     $("#country").select2({
+     theme: "bootstrap"
+     });
+     '
         );
-
+    
+        // Atribui traduções ao objeto $ui
         $ui->assign(
             'jsvar',
             '
-_L[\'Working\'] = \'' .
+    _L[\'Working\'] = \'' .
                 $_L['Working'] .
                 '\';
-_L[\'Company Name\'] = \'' .
+    _L[\'Company Name\'] = \'' .
                 $_L['Company Name'] .
                 '\';
-_L[\'New Company\'] = \'' .
+    _L[\'New Company\'] = \'' .
                 $_L['New Company'] .
                 '\';
- '
+     '
         );
-
-        $currencies = Model::factory('Models_Currency')->find_array();
-
-        $ui->assign('currencies', $currencies);
-
-        $ui->display('add-contact.tpl');
-
+    
+        $currencies = Model::factory('Models_Currency')->find_array(); // Consulta ao banco de dados para recuperar informações sobre moedas
+        $ui->assign('currencies', $currencies); // Atribui as informações das moedas ao objeto $ui
+    
+        $ui->display('add-contact.tpl'); // Exibe o template "add-contact.tpl" com todas as informações atribuídas anteriormente
+    
         break;
+    
 
     case 'summary':
         Event::trigger('contacts/summary/');
@@ -471,213 +510,219 @@ _L[\'New Company\'] = \'' .
 
         break;
 
-    case 'add-post':
-        Event::trigger('contacts/add-post/');
-
-        Event::trigger('contacts/add-post/_on_start');
-
-        $account = _post('account');
-
-        //  $company = _post('company');
-
-        $company_id = _post('cid');
-
-        $company = '';
-        $cid = 0;
-
-        if ($company_id != '' || $company_id != '0') {
-            $company_db = db_find_one('sys_companies', $company_id);
-
-            if ($company_db) {
-                $company = $company_db->company_name;
-                $cid = $company_id;
+        case 'add-post':
+            Event::trigger('contacts/add-post/'); // Aciona um evento relacionado à adição de contatos
+        
+            Event::trigger('contacts/add-post/_on_start'); // Aciona um evento relacionado ao início do processo de adição de contatos
+        
+            $account = _post('account'); // Obtém o valor do campo 'account' enviado via POST
+        
+            $company_id = _post('cid'); // Obtém o valor do campo 'cid' enviado via POST
+            $company = '';
+            $cid = 0;
+        
+            // Verifica se o campo 'cid' não está vazio nem é igual a '0'
+            if ($company_id != '' || $company_id != '0') {
+                $company_db = db_find_one('sys_companies', $company_id); // Busca uma empresa no banco de dados usando o valor de 'company_id'
+        
+                if ($company_db) {
+                    $company = $company_db->company_name;
+                    $cid = $company_id;
+                }
             }
-        }
-
-        $email = _post('email');
-        $phone = _post('phone');
-        $currency = _post('currency');
-
-        if ($currency == '') {
-            $currency = '0';
-        }
-
-        if (isset($_POST['tags']) and $_POST['tags'] != '') {
-            $tags = $_POST['tags'];
-        } else {
-            $tags = '';
-        }
-
-        $address = _post('address');
-        $city = _post('city');
-        $state = _post('state');
-        $zip = _post('zip');
-        $country = _post('country');
-        $msg = '';
-
-        if ($account == '') {
-            $msg .= $_L['Account Name is required'] . ' <br>';
-        }
-
-        if ($email != '') {
-            if (Validator::Email($email) == false) {
-                $msg .= $_L['Invalid Email'] . ' <br>';
+        
+            $email = _post('email'); // Obtém o valor do campo 'email' enviado via POST
+            $phone = _post('phone'); // Obtém o valor do campo 'phone' enviado via POST
+            $currency = _post('currency'); // Obtém o valor do campo 'currency' enviado via POST
+        
+            if ($currency == '') {
+                $currency = '0';
             }
-            $f = ORM::for_table('crm_accounts')
-                ->where('email', $email)
-                ->find_one();
-
-            if ($f) {
-                $msg .= $_L['Email already exist'] . ' <br>';
+        
+            // Verifica se o campo 'tags' foi enviado via POST e não está vazio
+            if (isset($_POST['tags']) and $_POST['tags'] != '') {
+                $tags = $_POST['tags']; // Obtém o valor do campo 'tags' enviado via POST
+            } else {
+                $tags = '';
             }
-        }
-
-        if ($phone != '') {
-            $f = ORM::for_table('crm_accounts')
-                ->where('phone', $phone)
-                ->find_one();
-
-            if ($f) {
-                $msg .= $_L['Phone number already exist'] . ' <br>';
+        
+            // Obtém os valores dos campos de endereço, cidade, estado, CEP e país enviados via POST
+            $address = _post('address');
+            $city = _post('city');
+            $state = _post('state');
+            $zip = _post('zip');
+            $country = _post('country');
+            $msg = ''; // Variável para armazenar mensagens de erro
+        
+            // Verifica se o campo 'account' está vazio
+            if ($account == '') {
+                $msg .= $_L['Account Name is required'] . ' <br>'; // Adiciona uma mensagem de erro à variável $msg
             }
-        }
-
-        $gid = _post('group');
-        $gname = '';
-        if ($gid != '') {
-            $g = db_find_one('crm_groups', $gid);
-            if ($g) {
-                $gname = $g['gname'];
+        
+            // Verifica se o campo 'email' não está vazio e se é um formato de email válido
+            if ($email != '') {
+                if (Validator::Email($email) == false) {
+                    $msg .= $_L['Invalid Email'] . ' <br>'; // Adiciona uma mensagem de erro à variável $msg
+                }
+        
+                $f = ORM::for_table('crm_accounts')
+                    ->where('email', $email)
+                    ->find_one();
+        
+                if ($f) {
+                    $msg .= $_L['Email already exist'] . ' <br>'; // Adiciona uma mensagem de erro à variável $msg
+                }
             }
-        } else {
-            $gid = 0;
-        }
-
-        $password = _post('password');
-        $cpassword = _post('cpassword');
-
-        $u_password = '';
-
-        if ($password != '') {
-            if (!Validator::Length($password, 15, 5)) {
-                $msg .=
-                    'Password should be between 6 to 15 characters' . '<br>';
+        
+            // Verifica se o campo 'phone' não está vazio
+            if ($phone != '') {
+                $f = ORM::for_table('crm_accounts')
+                    ->where('phone', $phone)
+                    ->find_one();
+        
+                if ($f) {
+                    $msg .= $_L['Phone number already exist'] . ' <br>'; // Adiciona uma mensagem de erro à variável $msg
+                }
             }
-
-            if ($password != $cpassword) {
-                $msg .= 'Passwords does not match' . '<br>';
+        
+            $gid = _post('group'); // Obtém o valor do campo 'group' enviado via POST
+            $gname = '';
+        
+            // Verifica se o campo 'group' não está vazio
+            if ($gid != '') {
+                $g = db_find_one('crm_groups', $gid); // Busca um grupo no banco de dados usando o valor de 'gid'
+                if ($g) {
+                    $gname = $g['gname'];
+                }
+            } else {
+                $gid = 0;
             }
-
-            $u_password = $password;
-            $password = Password::_crypt($password);
-        }
-
-        if ($msg == '') {
-            Tags::save($tags, 'Contacts');
-
-            $data = [];
-
-            $data['created_at'] = date('Y-m-d H:i:s');
-            $data['updated_at'] = date('Y-m-d H:i:s');
-
-            $d = ORM::for_table('crm_accounts')->create();
-
-            $d->account = $account;
-            $d->email = $email;
-            $d->phone = $phone;
-            $d->address = $address;
-            $d->city = $city;
-            $d->zip = $zip;
-            $d->state = $state;
-            $d->country = $country;
-            $d->tags = Arr::arr_to_str($tags);
-
-            //others
-            $d->fname = '';
-            $d->lname = '';
-            $d->company = $company;
-            $d->jobtitle = '';
-            $d->cid = $cid;
-            $d->o = $user->id;
-            $d->balance = '0.00';
-            $d->status = 'Active';
-            $d->notes = '';
-            $d->password = $password;
-            $d->token = '';
-            $d->ts = '';
-            $d->img = '';
-            $d->web = '';
-            $d->facebook = '';
-            $d->google = '';
-            $d->linkedin = '';
-
-            // v 4.2
-
-            $d->gname = $gname;
-            $d->gid = $gid;
-
-            // build 4550
-
-            $d->currency = $currency;
-
-            //
-
-            $d->created_at = $data['created_at'];
-
-            //
-            $d->save();
-            $cid = $d->id();
-            _log(
-                $_L['New Contact Added'] .
-                    ' ' .
-                    $account .
-                    ' [CID: ' .
-                    $cid .
-                    ']',
-                'Admin',
-                $user['id']
-            );
-
-            //now add custom fields
-            $fs = ORM::for_table('crm_customfields')
-                ->where('ctype', 'crm')
-                ->order_by_asc('id')
-                ->find_many();
-            foreach ($fs as $f) {
-                $fvalue = _post('cf' . $f['id']);
-                $fc = ORM::for_table('crm_customfieldsvalues')->create();
-                $fc->fieldid = $f['id'];
-                $fc->relid = $cid;
-                $fc->fvalue = $fvalue;
-                $fc->save();
+        
+            $password = _post('password'); // Obtém o valor do campo 'password' enviado via POST
+            $cpassword = _post('cpassword'); // Obtém o valor do campo 'cpassword' enviado via POST
+        
+            $u_password = '';
+        
+            // Verifica se o campo 'password' não está vazio
+            if ($password != '') {
+                // Verifica se a senha atende aos requisitos de comprimento
+                if (!Validator::Length($password, 15, 5)) {
+                    $msg .= 'Password should be between 6 to 15 characters' . '<br>'; // Adiciona uma mensagem de erro à variável $msg
+                }
+        
+                // Verifica se a senha e a confirmação de senha são iguais
+                if ($password != $cpassword) {
+                    $msg .= 'Passwords does not match' . '<br>'; // Adiciona uma mensagem de erro à variável $msg
+                }
+        
+                $u_password = $password;
+                $password = Password::_crypt($password); // Criptografa a senha antes de salvar
             }
-            //
-
-            Event::trigger('contacts/add-post/_on_finished');
-
-            // send welcome email if needed
-
-            $send_client_signup_email = _post('send_client_signup_email');
-
-            if (
-                $email != '' &&
-                $send_client_signup_email == 'Yes' &&
-                $u_password != ''
-            ) {
-                $email_data = [];
-                $email_data['account'] = $account;
-                $email_data['company'] = $company;
-                $email_data['password'] = $u_password;
-                $email_data['email'] = $email;
-
-                $send_email = Ib_Email::send_client_welcome_email($email_data);
+        
+            // Verifica se não há mensagens de erro
+            if ($msg == '') {
+                Tags::save($tags, 'Contacts'); // Salva as tags no banco de dados
+        
+                $data = [];
+        
+                $data['created_at'] = date('Y-m-d H:i:s');
+                $data['updated_at'] = date('Y-m-d H:i:s');
+        
+                $d = ORM::for_table('crm_accounts')->create(); // Cria uma nova entrada na tabela 'crm_accounts'
+        
+                // Atribui os valores aos campos da nova entrada
+                $d->account = $account;
+                $d->email = $email;
+                $d->phone = $phone;
+                $d->address = $address;
+                $d->city = $city;
+                $d->zip = $zip;
+                $d->state = $state;
+                $d->country = $country;
+                $d->tags = Arr::arr_to_str($tags);
+        
+                // Outros campos
+                $d->fname = '';
+                $d->lname = '';
+                $d->company = $company;
+                $d->jobtitle = '';
+                $d->cid = $cid;
+                $d->o = $user->id;
+                $d->balance = '0.00';
+                $d->status = 'Active';
+                $d->notes = '';
+                $d->password = $password;
+                $d->token = '';
+                $d->ts = '';
+                $d->img = '';
+                $d->web = '';
+                $d->facebook = '';
+                $d->google = '';
+                $d->linkedin = '';
+        
+                // Versão 4.2
+                $d->gname = $gname;
+                $d->gid = $gid;
+        
+                // Build 4550
+                $d->currency = $currency;
+        
+                $d->created_at = $data['created_at'];
+        
+                $d->save(); // Salva a nova entrada no banco de dados
+                $cid = $d->id();
+                _log(
+                    $_L['New Contact Added'] .
+                        ' ' .
+                        $account .
+                        ' [CID: ' .
+                        $cid .
+                        ']',
+                    'Admin',
+                    $user['id']
+                ); // Registra o evento de adição do novo contato no log
+        
+                // Agora adiciona campos personalizados
+                $fs = ORM::for_table('crm_customfields')
+                    ->where('ctype', 'crm')
+                    ->order_by_asc('id')
+                    ->find_many();
+        
+                // Percorre os campos personalizados e salva os valores no banco de dados
+                foreach ($fs as $f) {
+                    $fvalue = _post('cf' . $f['id']);
+                    $fc = ORM::for_table('crm_customfieldsvalues')->create();
+                    $fc->fieldid = $f['id'];
+                    $fc->relid = $cid;
+                    $fc->fvalue = $fvalue;
+                    $fc->save();
+                }
+        
+                Event::trigger('contacts/add-post/_on_finished'); // Aciona um evento relacionado ao término do processo de adição de contatos
+        
+                // Envia um email de boas-vindas, se necessário
+                $send_client_signup_email = _post('send_client_signup_email');
+        
+                if (
+                    $email != '' &&
+                    $send_client_signup_email == 'Yes' &&
+                    $u_password != ''
+                ) {
+                    $email_data = [];
+                    $email_data['account'] = $account;
+                    $email_data['company'] = $company;
+                    $email_data['password'] = $u_password;
+                    $email_data['email'] = $email;
+        
+                    $send_email = Ib_Email::send_client_welcome_email($email_data); // Envia o email de boas-vindas ao cliente
+                }
+        
+                echo $cid; // Retorna o ID do contato recém-adicionado
+            } else {
+                echo $msg; // Retorna as mensagens de erro
             }
-
-            echo $cid;
-        } else {
-            echo $msg;
-        }
-        break;
+            break;
+        
 
     case 'list':
         Event::trigger('contacts/list/');
@@ -1113,71 +1158,84 @@ $country
 
         break;
 
-    case 'import_csv':
-        $ui->assign('xheader', Asset::css(['dropzone/dropzone']));
-
-        $ui->assign(
-            'xfooter',
-            Asset::js(['dropzone/dropzone', 'contacts/import'])
-        );
-
-        $ui->display('contacts_import.tpl');
-
-        break;
-
-    case 'csv_upload':
-        $uploader = new Uploader();
-        $uploader->setDir('application/storage/temp/');
-        // $uploader->sameName(true);
-        $uploader->setExtensions(['csv']); //allowed extensions list//
-        if ($uploader->uploadFile('file')) {
-            //txtFile is the filebrowse element name //
-            $uploaded = $uploader->getUploadName(); //get uploaded file name, renames on upload//
-
-            $_SESSION['uploaded'] = $uploaded;
-        } else {
-            //upload failed
-            _msglog('e', $uploader->getMessage()); //get upload error message
-        }
-
-        break;
-
-    case 'csv_uploaded':
-        if (isset($_SESSION['uploaded'])) {
-            $uploaded = $_SESSION['uploaded'];
-
-            $csv = new parseCSV();
-            $csv->auto('application/storage/temp/' . $uploaded);
-
-            $contacts = $csv->data;
-
-            $cn = 0;
-
-            foreach ($contacts as $contact) {
-                $data = [];
-                $data['account'] = $contact['Full Name'];
-                $data['email'] = $contact['Email'];
-                $data['phone'] = $contact['Phone'];
-                $data['address'] = $contact['Address'];
-                $data['city'] = $contact['City'];
-                $data['zip'] = $contact['Zip'];
-                $data['state'] = $contact['State'];
-                $data['country'] = $contact['Country'];
-                $data['company'] = $contact['Company'];
-
-                $save = Contacts::add($data);
-
-                if (is_numeric($save)) {
-                    $cn++;
-                }
+        case 'import_csv':
+            // Define o cabeçalho adicional para a página, incluindo o arquivo CSS necessário
+            $ui->assign('xheader', Asset::css(['dropzone/dropzone']));
+        
+            // Define o rodapé adicional para a página, incluindo os arquivos JavaScript necessários
+            $ui->assign(
+                'xfooter',
+                Asset::js(['dropzone/dropzone', 'contacts/import'])
+            );
+        
+            // Exibe o template 'contacts_import.tpl' que contém o formulário de importação CSV
+            $ui->display('contacts_import.tpl');
+        
+            break;
+        
+        case 'csv_upload':
+            // Instancia um objeto Uploader para lidar com o upload do arquivo CSV
+            $uploader = new Uploader();
+            $uploader->setDir('application/storage/temp/');
+            // $uploader->sameName(true);
+            $uploader->setExtensions(['csv']); // Lista de extensões permitidas
+        
+            // Verifica se o arquivo CSV foi enviado com sucesso
+            if ($uploader->uploadFile('file')) {
+                //txtFile é o nome do elemento de seleção de arquivo
+                $uploaded = $uploader->getUploadName(); // Obtém o nome do arquivo enviado, renomeado no upload
+        
+                $_SESSION['uploaded'] = $uploaded;
+            } else {
+                // O upload falhou
+                _msglog('e', $uploader->getMessage()); // Obtém a mensagem de erro do upload
             }
-
-            _msglog('s', $cn . ' Contacts Imported');
-        } else {
-            _msglog('e', 'An Error Occurred while uploading the files');
-        }
-
-        break;
+        
+            break;
+        
+        case 'csv_uploaded':
+            // Verifica se o arquivo CSV foi previamente enviado e está presente na sessão
+            if (isset($_SESSION['uploaded'])) {
+                $uploaded = $_SESSION['uploaded'];
+        
+                // Cria uma instância de parseCSV para processar o arquivo CSV
+                $csv = new parseCSV();
+                $csv->auto('application/storage/temp/' . $uploaded);
+        
+                // Obtém os dados dos contatos do arquivo CSV
+                $contacts = $csv->data;
+        
+                $cn = 0;
+        
+                // Itera sobre os contatos e adiciona cada um deles
+                foreach ($contacts as $contact) {
+                    $data = [];
+                    $data['account'] = $contact['Full Name'];
+                    $data['email'] = $contact['Email'];
+                    $data['phone'] = $contact['Phone'];
+                    $data['address'] = $contact['Address'];
+                    $data['city'] = $contact['City'];
+                    $data['zip'] = $contact['Zip'];
+                    $data['state'] = $contact['State'];
+                    $data['country'] = $contact['Country'];
+                    $data['company'] = $contact['Company'];
+        
+                    // Adiciona o contato utilizando o método estático 'add' da classe Contacts
+                    $save = Contacts::add($data);
+        
+                    // Verifica se o contato foi salvo com sucesso
+                    if (is_numeric($save)) {
+                        $cn++;
+                    }
+                }
+        
+                _msglog('s', $cn . ' Contacts Imported');
+            } else {
+                _msglog('e', 'An Error Occurred while uploading the files');
+            }
+        
+            break;
+        
 
     case 'groups':
         $gs = ORM::for_table('crm_groups')

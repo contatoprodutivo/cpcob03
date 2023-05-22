@@ -35,23 +35,24 @@
 
     {$admin_extra_nav[1]}
 
-    {if has_access($user->roleid,'customers')}
-    <li class="{if $_application_menu eq 'contacts'}active{/if}">
+{if has_access($user->roleid, 'customers')}
+    <li class="{if $_application_menu eq 'contacts/groups'}active{/if}">
         <a href="#"><i class="icon-users"></i> <span class="nav-label">{$_L['Customers']}</span><span class="fa arrow"></span></a>
         <ul class="nav nav-second-level">
             <li><a href="{$_url}contacts/add/">{$_L['Add Customer']}</a></li>
-
             <li><a href="{$_url}contacts/list/">{$_L['List Customers']}</a></li>
-            <li><a href="{$_url}contacts/groups/">{$_L['Groups']}</a></li>
             {foreach $sub_menu_admin['crm'] as $sm_crm}
-
                 {$sm_crm}
-
-
             {/foreach}
         </ul>
     </li>
-    {/if}
+{/if}
+
+
+{if has_access($user->roleid, 'grupo', 'view')}
+    <li {if $_application_menu eq 'grupo'}class="active"{/if}><a href="{$_url}contacts/groups/"><i class="fa fa-users"></i> <span class="nav-label">{$_L['Groups']}</span></a></li>
+{/if}
+
 
 
     {if has_access($user->roleid,'companies','view')}
@@ -185,11 +186,11 @@
 
     {$admin_extra_nav[6]}
 
-    {if has_access($user->roleid,'reports')}
+   <!-- {if has_access($user->roleid,'reports')}
 
             {if $_c['accounting'] eq '1'}
 
-            <li class="{if $_application_menu eq 'reports'}active{/if}">
+           <li class="{if $_application_menu eq 'reports'}active{/if}">
             <a href="#"><i class="fa fa-bar-chart-o"></i> <span class="nav-label">{$_L['Reports']} </span><span class="fa arrow"></span></a>
             <ul class="nav nav-second-level">
 
@@ -219,7 +220,7 @@
 
         {/if}
 
-    {/if}
+    {/if} -->
 
     {if has_access($user->roleid,'utilities')}
 
