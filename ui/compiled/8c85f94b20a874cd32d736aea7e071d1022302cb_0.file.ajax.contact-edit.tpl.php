@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.39, created on 2023-05-19 13:01:34
+/* Smarty version 3.1.39, created on 2023-08-07 16:07:24
   from 'C:\xampp\htdocs\cpcob03\ui\theme\ibilling\ajax.contact-edit.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.39',
-  'unifunc' => 'content_64679d5e3f2f11_75149573',
+  'unifunc' => 'content_64d140ecac93a6_33543227',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '8c85f94b20a874cd32d736aea7e071d1022302cb' => 
     array (
       0 => 'C:\\xampp\\htdocs\\cpcob03\\ui\\theme\\ibilling\\ajax.contact-edit.tpl',
-      1 => 1684443485,
+      1 => 1691435241,
       2 => 'file',
     ),
   ),
@@ -20,7 +20,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   array (
   ),
 ),false)) {
-function content_64679d5e3f2f11_75149573 (Smarty_Internal_Template $_smarty_tpl) {
+function content_64d140ecac93a6_33543227 (Smarty_Internal_Template $_smarty_tpl) {
 ?>
 <form class="form-horizontal" id="rform">
 
@@ -33,32 +33,51 @@ function content_64679d5e3f2f11_75149573 (Smarty_Internal_Template $_smarty_tpl)
         </div>
     </div>
 
-
-
-    <div class="form-group"><label class="col-lg-2 control-label" for="company_id"><?php echo $_smarty_tpl->tpl_vars['_L']->value['Company'];?>
+<div class="form-group">
+    <label class="col-lg-2 control-label" for="company_id"><?php echo $_smarty_tpl->tpl_vars['_L']->value['Company'];?>
 </label>
-
-        <div class="col-lg-10">
-
-            <select id="company_id" name="company_id" class="form-control">
-                <option value="0"><?php echo $_smarty_tpl->tpl_vars['_L']->value['None'];?>
+    <div class="col-lg-10">
+        <?php if ($_smarty_tpl->tpl_vars['can_edit']->value) {?>
+        <!-- Se o usuário tiver permissão de edição, mostrar o select normalmente -->
+        <select id="company_id" name="company_id" class="form-control">
+            <option value="0"><?php echo $_smarty_tpl->tpl_vars['_L']->value['None'];?>
 </option>
-                <?php
+            <?php
 $_from = $_smarty_tpl->smarty->ext->_foreach->init($_smarty_tpl, $_smarty_tpl->tpl_vars['companies']->value, 'company');
 $_smarty_tpl->tpl_vars['company']->do_else = true;
 if ($_from !== null) foreach ($_from as $_smarty_tpl->tpl_vars['company']->value) {
 $_smarty_tpl->tpl_vars['company']->do_else = false;
 ?>
-                    <option value="<?php echo $_smarty_tpl->tpl_vars['company']->value['id'];?>
+            <option value="<?php echo $_smarty_tpl->tpl_vars['company']->value['id'];?>
 " <?php if ($_smarty_tpl->tpl_vars['d']->value->cid == ($_smarty_tpl->tpl_vars['company']->value['id'])) {?>selected<?php }?>><?php echo $_smarty_tpl->tpl_vars['company']->value['company_name'];?>
 </option>
-                <?php
+            <?php
 }
 $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
-            </select>
-
-        </div>
+        </select>
+        <?php } else { ?>
+        <!-- Caso contrário, mostrar apenas o valor selecionado como readonly -->
+        <?php $_smarty_tpl->_assignInScope('selectedCompanyId', $_smarty_tpl->tpl_vars['d']->value->cid);?> <!-- Armazena o valor atual do ID da empresa -->
+        <?php
+$_from = $_smarty_tpl->smarty->ext->_foreach->init($_smarty_tpl, $_smarty_tpl->tpl_vars['companies']->value, 'company');
+$_smarty_tpl->tpl_vars['company']->do_else = true;
+if ($_from !== null) foreach ($_from as $_smarty_tpl->tpl_vars['company']->value) {
+$_smarty_tpl->tpl_vars['company']->do_else = false;
+?>
+            <?php if ($_smarty_tpl->tpl_vars['company']->value['id'] == $_smarty_tpl->tpl_vars['selectedCompanyId']->value) {?>
+            <?php $_smarty_tpl->_assignInScope('selectedCompany', $_smarty_tpl->tpl_vars['company']->value['company_name']);?> <!-- Armazena o nome da empresa -->
+            <?php }?>
+        <?php
+}
+$_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
+        <input type="text" id="company_id" name="company_id" class="form-control" value="<?php echo $_smarty_tpl->tpl_vars['selectedCompany']->value;?>
+" readonly>
+        <input type="hidden" name="company_id" value="<?php echo $_smarty_tpl->tpl_vars['selectedCompanyId']->value;?>
+">
+        <?php }?>
     </div>
+</div>
+
 
     <div class="form-group"><label class="col-lg-2 control-label" for="edit_email"><?php echo $_smarty_tpl->tpl_vars['_L']->value['Email'];?>
 </label>

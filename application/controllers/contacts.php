@@ -294,69 +294,74 @@ switch ($action) {
 
         break;
 
-    case 'edit':
-        if (!has_access($user->roleid, 'customers', 'edit')) {
-            permissionDenied();
-        }
+        /*if ($company == '') {
+            $msg .= 'Insira o grupo'. ' <br>';
+        }*/
 
-        Event::trigger('contacts/edit/');
-
-        $cid = _post('cid');
-        $d = ORM::for_table('crm_accounts')->find_one($cid);
-        if ($d) {
-            $fs = ORM::for_table('crm_customfields')
-                ->where('ctype', 'crm')
-                ->order_by_asc('id')
-                ->find_many();
-            $ui->assign('fs', $fs);
-            $ui->assign('countries', Countries::all($d['country']));
-            $ui->assign('d', $d);
-            $tags = Tags::get_all('Contacts');
-            $ui->assign('tags', $tags);
-            $dtags = explode(',', $d['tags']);
-            $ui->assign('dtags', $dtags);
-
-            // find all groups
-
-            $gs = ORM::for_table('crm_groups')
-                ->order_by_asc('sorder')
-                ->find_array();
-
-            $ui->assign('gs', $gs);
-
-            $companies = ORM::for_table('sys_companies')
+        case 'edit':
+          
+            Event::trigger('contacts/edit/');
+    
+            $cid = _post('cid');
+            $d = ORM::for_table('crm_accounts')->find_one($cid);
+            if ($d) {
+                $fs = ORM::for_table('crm_customfields')
+                    ->where('ctype', 'crm')
+                    ->order_by_asc('id')
+                    ->find_many();
+                $ui->assign('fs', $fs);
+                $ui->assign('countries', Countries::all($d['country']));
+                $ui->assign('d', $d);
+                $tags = Tags::get_all('Contacts');
+                $ui->assign('tags', $tags);
+                $dtags = explode(',', $d['tags']);
+                $ui->assign('dtags', $dtags);
+    
+                // find all groups
+    
+                $gs = ORM::for_table('crm_groups')
+                    ->order_by_asc('sorder')
+                    ->find_array();
+    
+                $ui->assign('gs', $gs);
+    
+                $companies = ORM::for_table('sys_companies')
                 ->select('id')
                 ->select('company_name')
                 ->order_by_desc('id')
                 ->find_array();
-
+            
+            $can_edit = has_access($user->roleid, 'grupo_alteracao', 'edit');
+            
             $ui->assign('companies', $companies);
+            $ui->assign('can_edit', $can_edit);
 
-            $g_selected_id = route(4);
-
-            if ($g_selected_id) {
-                $ui->assign('g_selected_id', $g_selected_id);
+                $g_selected_id = route(4);
+    
+                if ($g_selected_id) {
+                    $ui->assign('g_selected_id', $g_selected_id);
+                } else {
+                    $ui->assign('g_selected_id', '');
+                }
+    
+                $c_selected_id = route(5);
+    
+                if ($c_selected_id) {
+                    $ui->assign('c_selected_id', $c_selected_id);
+                } else {
+                    $ui->assign('c_selected_id', '');
+                }
+    
+                $currencies = Model::factory('Models_Currency')->find_array();
+    
+                $ui->assign('currencies', $currencies);
+    
+                $ui->display('ajax.contact-edit.tpl');
             } else {
-                $ui->assign('g_selected_id', '');
             }
-
-            $c_selected_id = route(5);
-
-            if ($c_selected_id) {
-                $ui->assign('c_selected_id', $c_selected_id);
-            } else {
-                $ui->assign('c_selected_id', '');
-            }
-
-            $currencies = Model::factory('Models_Currency')->find_array();
-
-            $ui->assign('currencies', $currencies);
-
-            $ui->display('ajax.contact-edit.tpl');
-        } else {
-        }
-
-        break;
+    
+            break;
+    
 
     case 'add-activity-post':
         Event::trigger('contacts/add-activity-post/');
@@ -862,6 +867,7 @@ _L[\'are_you_sure\'] = \'' .
                 $msg .= $_L['Account Name is required'] . ' <br>';
             }
 
+           
             Tags::save($tags, 'Contacts');
 
             if ($email != '') {

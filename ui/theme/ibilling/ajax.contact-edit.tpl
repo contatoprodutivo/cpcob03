@@ -8,21 +8,31 @@
         </div>
     </div>
 
-
-
-    <div class="form-group"><label class="col-lg-2 control-label" for="company_id">{$_L['Company']}</label>
-
-        <div class="col-lg-10">
-
-            <select id="company_id" name="company_id" class="form-control">
-                <option value="0">{$_L['None']}</option>
-                {foreach $companies as $company}
-                    <option value="{$company['id']}" {if $d->cid eq ($company['id'])}selected{/if}>{$company['company_name']}</option>
-                {/foreach}
-            </select>
-
-        </div>
+<div class="form-group">
+    <label class="col-lg-2 control-label" for="company_id">{$_L['Company']}</label>
+    <div class="col-lg-10">
+        {if $can_edit}
+        <!-- Se o usuário tiver permissão de edição, mostrar o select normalmente -->
+        <select id="company_id" name="company_id" class="form-control">
+            <option value="0">{$_L['None']}</option>
+            {foreach $companies as $company}
+            <option value="{$company['id']}" {if $d->cid eq ($company['id'])}selected{/if}>{$company['company_name']}</option>
+            {/foreach}
+        </select>
+        {else}
+        <!-- Caso contrário, mostrar apenas o valor selecionado como readonly -->
+        {assign var="selectedCompanyId" value=$d->cid} <!-- Armazena o valor atual do ID da empresa -->
+        {foreach $companies as $company}
+            {if $company['id'] eq $selectedCompanyId}
+            {assign var="selectedCompany" value=$company['company_name']} <!-- Armazena o nome da empresa -->
+            {/if}
+        {/foreach}
+        <input type="text" id="company_id" name="company_id" class="form-control" value="{$selectedCompany}" readonly>
+        <input type="hidden" name="company_id" value="{$selectedCompanyId}">
+        {/if}
     </div>
+</div>
+
 
     <div class="form-group"><label class="col-lg-2 control-label" for="edit_email">{$_L['Email']}</label>
 
