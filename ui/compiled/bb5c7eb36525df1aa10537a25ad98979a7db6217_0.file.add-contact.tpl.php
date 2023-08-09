@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.39, created on 2023-05-22 20:29:09
+/* Smarty version 3.1.39, created on 2023-08-09 15:51:50
   from 'C:\xampp\htdocs\cpcob03\ui\theme\ibilling\add-contact.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.39',
-  'unifunc' => 'content_646bfac5cc0ba6_26350436',
+  'unifunc' => 'content_64d3e046064fb5_96461131',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     'bb5c7eb36525df1aa10537a25ad98979a7db6217' => 
     array (
       0 => 'C:\\xampp\\htdocs\\cpcob03\\ui\\theme\\ibilling\\add-contact.tpl',
-      1 => 1684797880,
+      1 => 1691607106,
       2 => 'file',
     ),
   ),
@@ -20,25 +20,25 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   array (
   ),
 ),false)) {
-function content_646bfac5cc0ba6_26350436 (Smarty_Internal_Template $_smarty_tpl) {
+function content_64d3e046064fb5_96461131 (Smarty_Internal_Template $_smarty_tpl) {
 $_smarty_tpl->_loadInheritance();
 $_smarty_tpl->inheritance->init($_smarty_tpl, true);
 ?>
 
 
 <?php 
-$_smarty_tpl->inheritance->instanceBlock($_smarty_tpl, 'Block_1412240285646bfac5c7d486_06708776', "content");
+$_smarty_tpl->inheritance->instanceBlock($_smarty_tpl, 'Block_57401080764d3e045a6d595_45161381', "content");
 ?>
 
 <?php $_smarty_tpl->inheritance->endChild($_smarty_tpl, ((string)$_smarty_tpl->tpl_vars['tpl_admin_layout']->value));
 }
 /* {block "content"} */
-class Block_1412240285646bfac5c7d486_06708776 extends Smarty_Internal_Block
+class Block_57401080764d3e045a6d595_45161381 extends Smarty_Internal_Block
 {
 public $subBlocks = array (
   'content' => 
   array (
-    0 => 'Block_1412240285646bfac5c7d486_06708776',
+    0 => 'Block_57401080764d3e045a6d595_45161381',
   ),
 );
 public function callBlock(Smarty_Internal_Template $_smarty_tpl) {
@@ -79,10 +79,10 @@ contacts/import_csv/" class="btn btn-xs btn-primary btn-rounded pull-right"><i c
                                 
                                     <!-- Campo CPF -->
                                     <div class="form-group">
-                                        <label class="col-md-4 control-label" for="cpf"><?php echo $_smarty_tpl->tpl_vars['_L']->value['cpf'];?>
+                                        <label class="col-md-4 control-label" for="cpf_titular"><?php echo $_smarty_tpl->tpl_vars['_L']->value['cpf'];?>
 <small class="red">*</small> </label>
                                         <div class="col-lg-8">
-                                            <input type="text" id="cpf" name="cpf" class="form-control" autofocus>
+                                            <input type="text" id="cpf_titular" name="cpf_titular" class="form-control" autofocus>
                                         </div>
                                     </div>
                                       

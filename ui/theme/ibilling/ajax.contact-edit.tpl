@@ -10,7 +10,7 @@
 
 <div class="form-group">
     <label class="col-lg-2 control-label" for="company_id">{$_L['Company']}</label>
-    <div class="col-lg-10">
+    <div class="col-lg-8">
         {if $can_edit}
         <!-- Se o usuário tiver permissão de edição, mostrar o select normalmente -->
         <select id="company_id" name="company_id" class="form-control">
@@ -32,6 +32,7 @@
         {/if}
     </div>
 </div>
+
 
 
     <div class="form-group"><label class="col-lg-2 control-label" for="edit_email">{$_L['Email']}</label>

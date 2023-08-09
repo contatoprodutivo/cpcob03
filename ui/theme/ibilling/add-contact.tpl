@@ -33,9 +33,9 @@
                                 
                                     <!-- Campo CPF -->
                                     <div class="form-group">
-                                        <label class="col-md-4 control-label" for="cpf">{$_L['cpf']}<small class="red">*</small> </label>
+                                        <label class="col-md-4 control-label" for="cpf_titular">{$_L['cpf']}<small class="red">*</small> </label>
                                         <div class="col-lg-8">
-                                            <input type="text" id="cpf" name="cpf" class="form-control" autofocus>
+                                            <input type="text" id="cpf_titular" name="cpf_titular" class="form-control" autofocus>
                                         </div>
                                     </div>
                                       

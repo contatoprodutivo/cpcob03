@@ -331,10 +331,10 @@ switch ($action) {
                 ->order_by_desc('id')
                 ->find_array();
             
-            $can_edit = has_access($user->roleid, 'grupo_alteracao', 'edit');
-            
-            $ui->assign('companies', $companies);
-            $ui->assign('can_edit', $can_edit);
+                $can_edit = has_access($user->roleid, 'companies', 'edit');
+              
+                $ui->assign('companies', $companies);
+                $ui->assign('can_edit', $can_edit);
 
                 $g_selected_id = route(4);
     
@@ -515,6 +515,9 @@ switch ($action) {
 
         break;
 
+         //ADICIONAR CONTATO
+
+
         case 'add-post':
             Event::trigger('contacts/add-post/'); // Aciona um evento relacionado à adição de contatos
         
@@ -556,6 +559,7 @@ switch ($action) {
             $city = _post('city');
             $state = _post('state');
             $zip = _post('zip');
+            $cpf_titular = _post('cpf_titular');
             $country = _post('country');
             $msg = ''; // Variável para armazenar mensagens de erro
         
@@ -639,6 +643,7 @@ switch ($action) {
                 $d->account = $account;
                 $d->email = $email;
                 $d->phone = $phone;
+                $d->cpf_titular = $cpf_titular;
                 $d->address = $address;
                 $d->city = $city;
                 $d->zip = $zip;
@@ -726,7 +731,7 @@ switch ($action) {
             } else {
                 echo $msg; // Retorna as mensagens de erro
             }
-            break;
+            break; 
         
 
     case 'list':

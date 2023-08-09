@@ -1,18 +1,18 @@
 <?php
-/* Smarty version 3.1.39, created on 2023-08-07 16:07:24
+/* Smarty version 3.1.39, created on 2023-08-09 16:00:04
   from 'C:\xampp\htdocs\cpcob03\ui\theme\ibilling\ajax.contact-edit.tpl' */
 
 /* @var Smarty_Internal_Template $_smarty_tpl */
 if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   'version' => '3.1.39',
-  'unifunc' => 'content_64d140ecac93a6_33543227',
+  'unifunc' => 'content_64d3e234e52646_91342082',
   'has_nocache_code' => false,
   'file_dependency' => 
   array (
     '8c85f94b20a874cd32d736aea7e071d1022302cb' => 
     array (
       0 => 'C:\\xampp\\htdocs\\cpcob03\\ui\\theme\\ibilling\\ajax.contact-edit.tpl',
-      1 => 1691435241,
+      1 => 1691607601,
       2 => 'file',
     ),
   ),
@@ -20,7 +20,7 @@ if ($_smarty_tpl->_decodeProperties($_smarty_tpl, array (
   array (
   ),
 ),false)) {
-function content_64d140ecac93a6_33543227 (Smarty_Internal_Template $_smarty_tpl) {
+function content_64d3e234e52646_91342082 (Smarty_Internal_Template $_smarty_tpl) {
 ?>
 <form class="form-horizontal" id="rform">
 
@@ -36,7 +36,7 @@ function content_64d140ecac93a6_33543227 (Smarty_Internal_Template $_smarty_tpl)
 <div class="form-group">
     <label class="col-lg-2 control-label" for="company_id"><?php echo $_smarty_tpl->tpl_vars['_L']->value['Company'];?>
 </label>
-    <div class="col-lg-10">
+    <div class="col-lg-8">
         <?php if ($_smarty_tpl->tpl_vars['can_edit']->value) {?>
         <!-- Se o usuário tiver permissão de edição, mostrar o select normalmente -->
         <select id="company_id" name="company_id" class="form-control">
@@ -77,6 +77,7 @@ $_smarty_tpl->smarty->ext->_foreach->restore($_smarty_tpl, 1);?>
         <?php }?>
     </div>
 </div>
+
 
 
     <div class="form-group"><label class="col-lg-2 control-label" for="edit_email"><?php echo $_smarty_tpl->tpl_vars['_L']->value['Email'];?>
